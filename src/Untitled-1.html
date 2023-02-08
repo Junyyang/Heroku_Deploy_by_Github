@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<!-- <head>
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+    .wrap{
+      height: 300px;
+      overflow-x: auto;
+      overflow-y: hidden;
+      white-space: nowrap;
+    }
+    .b{
+      width: 200px;
+      height: 300px;
+    }
+    </style>
+</head> -->
+
+<div className="App">
+
+
+
+    <div className="Input">
+        <h1>Input the calligraphy image to classify the style</h1>
+        <p>upload the image by your own:</p>
+        <form onSubmit={handleSubmit}>  
+            <input type="file" accept=".png, .jpg, .jpeg" onChange={handleChange} />  
+            <button type="submit" disabled={buttonDisable}>{buttonText}</button>
+        </form>
+    </div>
+
+    <!--这是一个注释，注释在浏览器中不会显示-->
+    <h1>OR Upload from sample images:</h1>
+    <form onSubmit={handleSubmit}> 
+        <select name="Sample scripts" id="samples">
+                <option value="./test_image/Cao/0.jpg">Select a sample script (default is Cursive script)</option>
+                <option value="./test_image/Cao/0.jpg">Crusive scrip 1</option>
+                <option value="./test_image/Cao/1.jpg">Crusive scrip 2</option>
+                <option value="./test_image/Cao/2.jpg">Crusive scrip 3</option>
+                <option value="./test_image/Cao/7.jpg">Crusive scrip 4</option>
+                <option value="./test_image/Cao/4.jpg">Crusive scrip 5</option>
+
+                <option value="./test_image/Kai/0.jpg">Standard scrip 1</option>
+                <option value="./test_image/Kai/1.jpg">Standard scrip 2</option>
+                <option value="./test_image/Kai/2.jpg">Standard scrip 3</option>
+                <option value="./test_image/Kai/7.jpg">Standard scrip 4</option>
+                <option value="./test_image/Kai/4.jpg">Standard scrip 5</option>
+
+                <option value="./test_image/Li/0.jpg">Clerical scrip 1</option>
+                <option value="./test_image/Li/1.jpg">Clerical scrip 2</option>
+                <option value="./test_image/Li/3.jpg">Clerical scrip 3</option>
+                <option value="./test_image/Li/7.jpg">Clerical scrip 4</option>
+                <option value="./test_image/Li/4.jpg">Clerical scrip 5</option>
+
+                <option value="./test_image/Zhuan/0.jpg">Seal scrip 1</option>
+                <option value="./test_image/Zhuan/1.jpg">Seal scrip 2</option>
+                <option value="./test_image/Zhuan/2.jpg">Seal scrip 3</option>
+                <option value="./test_image/Zhuan/7.jpg">Seal scrip 4</option>
+                <option value="./test_image/Zhuan/3.jpg">Seal scrip 5</option>
+            </select>
+        <p>
+            <input type="submit" value="Submit" />
+            <input type="reset" value="cancel" />
+        </p>
+    </form>
+
+    <div className="Output">
+        <h1>Recognized as style:</h1>
+        <p>{outputFileData}</p>
+    </div>
+
+    <h2>Cursive Script Samples:</h2>
+    <p>script 1 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        script 2 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        script 3 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        script 4 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        script 5 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    </p>
+    <!-- <div class="wrap">
+        <img src="./test_image/Cao/0.jpg" alt="Cursive Script" class="b">
+        <img src="./test_image/Cao/1.jpg" alt="Cursive Script" class="b">
+        <img src="./test_image/Cao/2.jpg" alt="Cursive Script" class="b">
+        <img src="./test_image/Cao/7.jpg" alt="Cursive Script" class="b">
+        <img src="./test_image/Cao/4.jpg" alt="Cursive Script" class="b">
+    </div> -->
+    <table><tr>
+        <td><img src="./test_image/Cao/0.jpg" alt="Cursive Script"  width="200" height="300"></td>
+        <td><img src="./test_image/Cao/1.jpg" alt="Cursive Script"  width="200" height="300"></td>
+        <td><img src="./test_image/Cao/2.jpg" alt="Cursive Script"  width="200" height="300"></td>
+        <td><img src="./test_image/Cao/7.jpg" alt="Cursive Script"  width="200" height="300"></td>
+        <td><img src="./test_image/Cao/4.jpg" alt="Cursive Script"  width="200" height="300"></td>
+    </tr></table>
+
+
+
+    <h2>Standard Script Samples:</h2>
+    <p>script 1 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        script 2 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        script 3 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        script 4 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        script 5 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    </p>
+    <!-- <div class="wrap">
+        <img src="./test_image/Kai/0.jpg" alt="Standard Script" class="b">
+        <img src="./test_image/Kai/1.jpg" alt="Standard Script" class="b">
+        <img src="./test_image/Kai/2.jpg" alt="Standard Script" class="b">
+        <img src="./test_image/Kai/7.jpg" alt="Standard Script" class="b">
+        <img src="./test_image/Kai/4.jpg" alt="Standard Script" class="b">
+    </div> -->
+    <table><tr>
+        <td><img src="./test_image/Kai/0.jpg" alt="Standard Script" border=0 width="200" height="300"></td>
+        <td><img src="./test_image/Kai/1.jpg" alt="Standard Script" border=0 width="200" height="300"></td>
+        <td><img src="./test_image/Kai/2.jpg" alt="Standard Script" border=0 width="200" height="300"></td>
+        <td><img src="./test_image/Kai/7.jpg" alt="Standard Script" border=0 width="200" height="300"></td>
+        <td><img src="./test_image/Kai/4.jpg" alt="Standard Script" border=0 width="200" height="300"></td>
+    </tr></table>
+
+    <h2>Clerical Script Samples:</h2>
+    <p>script 1 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        script 2 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        script 3 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        script 4 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        script 5 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    </p>
+    <!-- <div class="wrap">
+        <img src="./test_image/Li/0.jpg" alt="Clerical Script" class="b">
+        <img src="./test_image/Li/1.jpg" alt="Clerical Script" class="b">
+        <img src="./test_image/Li/3.jpg" alt="Clerical Script" class="b">
+        <img src="./test_image/Li/7.jpg" alt="Clerical Script" class="b">
+        <img src="./test_image/Li/4.jpg" alt="Clerical Script" class="b">
+    </div> -->
+    <table><tr>
+        <td><img src="./test_image/Li/0.jpg" alt="Clerical Script" border=0 width="200" height="300"></td>
+        <td><img src="./test_image/Li/1.jpg" alt="Clerical Script" border=0 width="200" height="300"></td>
+        <td><img src="./test_image/Li/3.jpg" alt="Clerical Script" border=0 width="200" height="300"></td>
+        <td><img src="./test_image/Li/7.jpg" alt="Clerical Script" border=0 width="200" height="300"></td>
+        <td><img src="./test_image/Li/4.jpg" alt="Clerical Script" border=0 width="200" height="300"></td>
+    </tr></table>
+
+    <h2>Seal Script Samples:</h2>
+    <p>script 1 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        script 2 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        script 3 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        script 4 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        script 5 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    </p>
+    <!-- <div class="wrap">
+        <img src="./test_image/Zhuan/0.jpg" alt="Seal Script" class="b">
+        <img src="./test_image/Zhuan/1.jpg" alt="Seal Script" class="b">
+        <img src="./test_image/Zhuan/2.jpg" alt="Seal Script" class="b">
+        <img src="./test_image/Zhuan/7.jpg" alt="Seal Script" class="b">
+        <img src="./test_image/Zhuan/3.jpg" alt="Seal Script" class="b">
+    </div> -->
+    <table><tr>
+        <td><img src="./test_image/Zhuan/0.jpg" alt="Seal Script" border=0 width="200" height="300"></td>
+        <td><img src="./test_image/Zhuan/1.jpg" alt="Seal Script" border=0 width="200" height="300"></td>
+        <td><img src="./test_image/Zhuan/2.jpg" alt="Seal Script" border=0 width="200" height="300"></td>
+        <td><img src="./test_image/Zhuan/7.jpg" alt="Seal Script" border=0 width="200" height="300"></td>
+        <td><img src="./test_image/Zhuan/3.jpg" alt="Seal Script" border=0 width="200" height="300"></td>
+    </tr></table>
+</div>
