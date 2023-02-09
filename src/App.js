@@ -1,34 +1,11 @@
 import './App.css';
 import React from 'react';
 
-// import crusive1 from './test_image/Cao/0.jpg'
-// import crusive2 from './test_image/Cao/1.jpg'
-// import crusive3 from './test_image/Cao/2.jpg'
-// import crusive4 from './test_image/Cao/7.jpg'
-// import crusive5 from './test_image/Cao/4.jpg'
-
-// import Standard1 from "./test_image/Kai/0.jpg"
-// import Standard2 from "./test_image/Kai/1.jpg"
-// import Standard3 from "./test_image/Kai/2.jpg"
-// import Standard4 from "./test_image/Kai/7.jpg"
-// import Standard5 from "./test_image/Kai/4.jpg"
-
-// import Clerical1 from "./test_image/Li/0.jpg"
-// import Clerical2 from "./test_image/Li/1.jpg"
-// import Clerical3 from "./test_image/Li/3.jpg"
-// import Clerical4 from "./test_image/Li/7.jpg"
-// import Clerical5 from "./test_image/Li/4.jpg"
-
-// import Seal1 from "./test_image/Zhuan/0.jpg"
-// import Seal2 from "./test_image/Zhuan/1.jpg"
-// import Seal3 from "./test_image/Zhuan/2.jpg"
-// import Seal4 from "./test_image/Zhuan/7.jpg"
-// import Seal5 from "./test_image/Zhuan/3.jpg"
-
 // global variables to change where necessary
-const DROPDOWN_API_ENDPOINT = 'https://u4duylmb1i.execute-api.us-east-1.amazonaws.com/prod/'; // TODO The demo files GET/POST REST API
-const ML_API_ENDPOINT = 'https://pq22krmubb.execute-api.us-east-1.amazonaws.com/prod/'; // TODO The handwritten digit inference POST REST API 
-const PLOT_API_ENDPOINT = 'https://pt9okgfp10.execute-api.us-east-1.amazonaws.com/prod'; 
+// const DROPDOWN_API_ENDPOINT = 'https://u4duylmb1i.execute-api.us-east-1.amazonaws.com/prod/'; // TODO The dropdown (original py3.6)  GET/POST API
+const DROPDOWN_API_ENDPOINT = 'https://p3qqh6yu55.execute-api.us-east-1.amazonaws.com/prod'; // TODO The dropdown (original py3.6)  GET/POST API
+const ML_API_ENDPOINT = 'https://pq22krmubb.execute-api.us-east-1.amazonaws.com/prod/'; // TODO The ML inference POST API 
+const PLOT_API_ENDPOINT = 'https://pt9okgfp10.execute-api.us-east-1.amazonaws.com/prod';  // TODO The plot API by Matplotlib POST API 
 
 
 // atob is deprecated but this function converts base64string to text string
@@ -80,8 +57,8 @@ function App() {
 
       // GET request success
       else {
-        const s3BucketFiles = JSON.parse(data.body);
-        setDemoDropdownFiles(s3BucketFiles["s3Files"]);
+        const s3BucketFiles = JSON.parse(data.body);    // 'body': json.dumps({"bytesData": data, "fileType": response['ContentType']})
+        setDemoDropdownFiles(s3BucketFiles["s3Files"]);   
       }
     });
   }, [])
@@ -131,6 +108,7 @@ function App() {
     setButtonDisable(false);
   }
 
+
   // handle calligraphy image  file submission
   // get the prediction result array
   const handleSubmit = (event) => {
@@ -164,6 +142,32 @@ function App() {
       // setButtonDisable(false);
       // setSubmitButtonText('Submit');
     })
+  }
+
+  const handleChange_2 = async (event) => {
+
+    // clear response results
+    settextFileData('');
+    sethistFileData('');
+    setOutputImage('');
+    // reset demo dropdown selection
+    setSelectedDropdownFile('');
+
+
+    const inputFile = event.target.files[0];
+
+    // update file button text
+    setFileButtonText(inputFile.name);
+
+    // convert file to bytes data
+    const base64Data = await convertFileToBytes(inputFile);
+    setInputImage(base64Data);
+    const base64DataArray = base64Data.split('base64,'); // need to get rid of 'data:image/png;base64,' at the beginning of encoded string
+    const encodedString = base64DataArray[1];
+    setInputFileData(encodedString);
+
+    // enable submit button
+    setButtonDisable(false);
   }
 
     // handle calligraphy image  file submission
@@ -253,22 +257,32 @@ function App() {
             {demoDropdownFiles.map((file) => <option key={file} value={file}>{file}</option>)}
         </select>
 
-
+        {/* 
         <form onSubmit={handleSubmit}>
           <label htmlFor="file-upload">{fileButtonText}</label>
           <input type="file" id="file-upload" onChange={handleChange} />
           <button type="submit" disabled={buttonDisable}>{submitButtonText}</button>
         </form>
-
+        */}
+        
+        {/* Get the text file and send to Hist Lambda */}
+        {/* 
+        <form onSubmit={handleSubmit_2}>
+          <label htmlFor="file-upload">{histButtonText}</label>
+          <input type="file" id="file-upload" onChange={handleChange_2} />
+          <button type="submit" disabled={buttonDisable}>{submitButtonText}</button>
+        </form>
 
         <img src={inputImage} alt="" />
+        */}
+
       </div>
 
-      <div className="Output">
+      {/* <div className="Output">
         <h1>Results</h1>
         <p>{textFileData}</p>
         <img src={outputImage} alt="" width="80%" height="auto" /> 
-      </div>
+      </div> */}
       
       <a href="https://drive.google.com/file/d/1aowEQgeSo2WkMqScQzFM8IaYZUx4cul2/view?usp=sharing">REPORT LINK</a>
       
