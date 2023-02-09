@@ -24,21 +24,28 @@ const decodeImageBase64 = (base64String) => {
   return "data:image/png;base64," + base64String
 };
 
-var text_file = [0.0, 0.0, 0.0, 0.0];
+// var text_file = [0.0, 0.0, 0.0, 0.0];
 
+
+// Setup two buttons; one for submit image, another for load result histogram;
 function App() {
   const [inputFileData, setInputFileData] = React.useState(''); // represented as bytes data (string)
   const [textFileData, settextFileData] = React.useState(''); // represented as readable data (text string)
   const [histFileData, sethistFileData] = React.useState(''); // represented as readable data (image string)
   
   const [inputImage, setInputImage] = React.useState(''); // represented as bytes data (string)
-  const [outputImage, setOutputImage] = React.useState(''); // represented as bytes data (string)
+  // const [outputImage, setOutputImage] = React.useState(''); // represented as bytes data (string)
 
+  // submit button
   const [buttonDisable, setButtonDisable] = React.useState(true);
   const [submitButtonText, setSubmitButtonText] = React.useState('Submit');
+
+  // Choose your own image .png
   const [fileButtonText, setFileButtonText] = React.useState('Upload File');
 
-  const [histButtonText, setHistButtonText] = React.useState('Load Histogram');
+  // loadhist button
+  const [loadButtonDisable, setLoadButtonDisable] = React.useState(true);
+  const [loadButtonText, setLoadButtonText] = React.useState('Load Prediction Histogram');
 
 
   const [demoDropdownFiles, setDemoDropdownFiles] = React.useState([]);
@@ -80,105 +87,114 @@ function App() {
   }
 
 
-  // // handle file input
-  // const handleChange = async (event) => {
+  // handle file input
+  const handleChange = async (event) => {
+    const inputFile = event.target.files[0];
 
-  //   // clear response results
-  //   settextFileData('');
-  //   sethistFileData('');
-  //   setOutputImage('');
-  //   // reset demo dropdown selection
-  //   setSelectedDropdownFile('');
+    // update after loading client's image file button text
+    setFileButtonText(inputFile.name);
+
+    // convert file to bytes data
+    const base64Data = await convertFileToBytes(inputFile);
+    setInputImage(base64Data);
+
+    const base64DataArray = base64Data.split('base64,'); // need to get rid of 'data:image/png;base64,' at the beginning of encoded string
+    const encodedString = base64DataArray[1];
+    setInputFileData(encodedString);
+
+    // enable submit button
+    setButtonDisable(false);
+    setLoadButtonDisable(false);
+
+    // clear response results
+    settextFileData('');
+    sethistFileData('');
+
+    // reset demo dropdown selection
+    setSelectedDropdownFile('');
+  }
 
 
-  //   const inputFile = event.target.files[0];
+  // handle calligraphy image  file submission
+  // get the prediction result array
+  const handleSubmit = (event) => {
+    event.preventDefault();
 
-  //   // update file button text
-  //   setFileButtonText(inputFile.name);
+    // temporarily disable submit button
+    setButtonDisable(true);
+    setSubmitButtonText('Loading Result...');
 
-  //   // convert file to bytes data
-  //   const base64Data = await convertFileToBytes(inputFile);
-  //   setInputImage(base64Data);
-  //   const base64DataArray = base64Data.split('base64,'); // need to get rid of 'data:image/png;base64,' at the beginning of encoded string
-  //   const encodedString = base64DataArray[1];
-  //   setInputFileData(encodedString);
+    // make POST request
+    fetch(ML_API_ENDPOINT, {
+      method: 'POST',
+      headers: { "Content-Type": "application/json", "Accept": "text/plain" },
+      body: JSON.stringify({ "image": inputFileData })                             // send calligraphy image to ML lambda
+    }).then(response => response.json())
+    .then(data => {
+      // POST request error
+      if (data.statusCode === 400) {
+        const outputErrorMessage = JSON.parse(data.errorMessage)['outputResultsData'];
+        settextFileData(outputErrorMessage);
+      }
 
-  //   // enable submit button
-  //   setButtonDisable(false);
-  // }
+      // POST request success
+      else {
+        const outputBytesData_txt = JSON.parse(data.body)['outputResultsData'];
+        // text_file = decodeFileBase64(outputBytesData_txt);
+        settextFileData(decodeFileBase64(outputBytesData_txt));   // Setup txt output file
 
 
+        // Activate the Submit button after choose image from the dropdown list
+        setLoadButtonText('Load Prediction Histogram');
+        setLoadButtonDisable(false);
+      }
 
-  // // handle calligraphy image  file submission
-  // // get the prediction result array
-  // const handleSubmit = (event) => {
-  //   event.preventDefault();
+      // // re-enable submit button
+      // setButtonDisable(false);
+      // setSubmitButtonText('Submit');
+    })
+  }
 
-  //   // temporarily disable submit button
-  //   setButtonDisable(true);
-  //   setSubmitButtonText('Loading Result...');
+  // ===============================================
+  // handle showing prediction histogram result
+  const handleLoadhist = (event) => {
+    event.preventDefault();
 
-  //   // make POST request
-  //   fetch(ML_API_ENDPOINT, {
-  //     method: 'POST',
-  //     headers: { "Content-Type": "application/json", "Accept": "text/plain" },
-  //     body: JSON.stringify({ "image": inputFileData })                             // send calligraphy image to ML lambda
-  //   }).then(response => response.json())
-  //   .then(data => {
-  //     // POST request error
-  //     if (data.statusCode === 400) {
-  //       const outputErrorMessage = JSON.parse(data.errorMessage)['outputResultsData'];
-  //       settextFileData(outputErrorMessage);
-  //     }
+    // temporarily disable submit button
+    setLoadButtonDisable(true);
+    setLoadButtonText('Loading Prediction Histogram...');
 
-  //     // POST request success
-  //     else {
-  //       const outputBytesData_txt = JSON.parse(data.body)['outputResultsData'];
-  //       text_file = decodeFileBase64(outputBytesData_txt);
-  //       settextFileData(decodeFileBase64(outputBytesData_txt));   // Setup txt output file
-  //     }
+    // make POST request
+    fetch(PLOT_API_ENDPOINT, {
+      method: 'POST',
+      headers: { "Content-Type": "application/json", "Accept": "text/plain" },
+      body: JSON.stringify({ "text": textFileData })                             // send text result to histogram lambda
+    }).then(response => response.json())
+    .then(data => {
+      // POST request error
+      if (data.statusCode === 400) {
+        const outputErrorMessage = JSON.parse(data.errorMessage)['bytesData'];
+        sethistFileData(outputErrorMessage);
+      }
 
-  //     // // re-enable submit button
-  //     // setButtonDisable(false);
-  //     // setSubmitButtonText('Submit');
-  //   })
-  // }
 
-  //   // handle calligraphy image  file submission
-  // // get the prediction result array
-  // const handleSubmit_2 = (event) => {
-  //   event.preventDefault();
+      
+      // POST request success
+      else {
+        const outputBytesData = JSON.parse(data.body)['bytesData'];
+        sethistFileData(decodeImageBase64(outputBytesData));   // Setup txt output file
+      }
 
-  //   // make POST request
-  //   fetch(PLOT_API_ENDPOINT, {
-  //     method: 'POST',
-  //     headers: { "Content-Type": "application/json", "Accept": "text/plain" },
-  //     // body: JSON.stringify({ "text": textFileData })                             // send text result to histogram lambda
-  //     // body: JSON.stringify({ "text": text_file })  
-  //     body: JSON.stringify({ "text": decodeFileBase64(outputBytesData_txt) })  
-  //   }).then(response => response.json())
-  //   .then(data => {
-  //     // POST request error
-  //     if (data.statusCode === 400) {
-  //       const outputErrorMessage = JSON.parse(data.errorMessage)['outputResultsData'];
-  //       sethistFileData(outputErrorMessage);
-  //     }
+      // re-enable submit button
+      setButtonDisable(false);
+      setSubmitButtonText('Submit');
 
-  //     // POST request success
-  //     else {
-  //       // const outputBytesData = JSON.parse(data.body)['outputResultsData'];
-  //       // sethistFileData(decodeImageBase64(outputBytesData));   // Setup image output file
-  //       const histBytesData = JSON.parse(data.body)['bytesData'];
-  //       sethistFileData(histBytesData);
-  //       setOutputImage('data:image/png;base64,' + histBytesData);
-  //     }
-
-  //     // re-enable submit button
-  //     setButtonDisable(false);
-  //     setSubmitButtonText('Submit');
-  //   })
-  // }
-
+      setLoadButtonDisable(true);
+      setLoadButtonText('Load Prediction Histogram After Submitting');
+    })
+  }
+  // ===============================================
+  
 
 
   // handle demo dropdown file selection
@@ -187,6 +203,7 @@ function App() {
 
     // temporarily disable submit button
     setButtonDisable(true);
+    setLoadButtonDisable(true);
     setSubmitButtonText('Loading Demo File...');
 
     // only make POST request on file selection
@@ -207,8 +224,11 @@ function App() {
           const dropdownFileBytesData = JSON.parse(data.body)['bytesData'];
           setInputFileData(dropdownFileBytesData);
           setInputImage('data:image/png;base64,' + dropdownFileBytesData); // hacky way of setting image from bytes data - even works on .jpeg lol
+          
+          // Activate the Submit button after choose image from the dropdown list
           setSubmitButtonText('Submit');
           setButtonDisable(false);
+
         }
       });
     }
@@ -220,10 +240,29 @@ function App() {
 
 
   return (
+    <div className="App">
 
-    <div className="App">     
-      <div className="Input">       
+      <div className="Instruction">
+        <h1>How to use</h1>
+        <p>
+          <b>Steps:</b> 
+          <p>1. Upload your own image by "Upload File" OR select the demo image form the dropdown lists.</p>
+          <p> &#40; Loading the image and convert to bytes data if uploaded by your own &#41; . </p>
+          <p> </p>
+          <p>2. Click "Submit" button and receive the prediction scores. </p>
+          <p> &#40; Using the POST API to upload the image butes data to ML lambda and do the inferrence. Return back the prediction scores. </p>
+          <p> </p>
+          <p>3. Click "Load Prediction Histogram" button and receive the histogram of prediction scores.</p>
+          <p> &#40; Using the POST API to upload the prediction scores to Histogram Ploting lambda. Return back the prediction histogram. </p>
+          
+        </p>
+
+      </div>
+
+
+      <div className="Input">
         <h1>Junyyang's Project | Traditional Chinese Calligraphy Style recognition</h1>
+        <a href="https://drive.google.com/file/d/1aowEQgeSo2WkMqScQzFM8IaYZUx4cul2/view?usp=sharing">REPORT LINK</a>
         <h1>Input</h1>
         <label htmlFor="demo-dropdown">Demo: </label>
         <select name="Select Image" id="demo-dropdown" value={selectedDropdownFile} onChange={handleDropdown}>
@@ -231,34 +270,28 @@ function App() {
             {demoDropdownFiles.map((file) => <option key={file} value={file}>{file}</option>)}
         </select>
 
-        {/* 
+        {/*Upload button and Submit buttion*/}
         <form onSubmit={handleSubmit}>
           <label htmlFor="file-upload">{fileButtonText}</label>
           <input type="file" id="file-upload" onChange={handleChange} />
           <button type="submit" disabled={buttonDisable}>{submitButtonText}</button>
         </form>
-        */}
-        
-        {/* Get the text file and send to Hist Lambda */}
-        {/* 
-        <form onSubmit={handleSubmit_2}>
-          <label htmlFor="file-upload">{histButtonText}</label>
-          <input type="file" id="file-upload" onChange={handleChange_2} />
-          <button type="submit" disabled={buttonDisable}>{submitButtonText}</button>
+
+
+        {/*Load Histogram buttion*/}
+        <form onSubmit={handleLoadhist}>
+          <button type="submit" disabled={loadButtonDisable}>{loadButtonText}</button>
         </form>
 
         <img src={inputImage} alt="" />
-        */}
-
       </div>
 
-      {/* <div className="Output">
+      <div className="Output">
         <h1>Results</h1>
         <p>{textFileData}</p>
-        <img src={outputImage} alt="" width="80%" height="auto" /> 
-      </div> */}
+        <img src={histFileData} alt="" width="80%" height="auto" /> 
+      </div>
       
-      <a href="https://drive.google.com/file/d/1aowEQgeSo2WkMqScQzFM8IaYZUx4cul2/view?usp=sharing">REPORT LINK</a>
       
     </div>
   );
